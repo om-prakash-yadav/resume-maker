@@ -24,3 +24,43 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  #resume-print-root {
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Allow sections to split across pages; keep *items* together instead. */
+  .resume-section,
+  section {
+    break-inside: auto;
+    page-break-inside: auto;
+  }
+
+  /* Ensure headings stay with their content */
+  h1, h2, h3, h4, h5, h6 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  /* Keep experience/education/project items together */
+  .resume-item {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
