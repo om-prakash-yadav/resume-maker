@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import puppeteer from 'puppeteer';
+import chromium from '@sparticuz/chromium';
+import puppeteer from 'puppeteer-core';
 import type { ResumeData } from '@/types/resume';
 
 export const runtime = 'nodejs';
@@ -52,9 +53,9 @@ export async function POST(req: NextRequest) {
   const marginMm = clampMarginMm(body.marginMm);
 
   const browser = await puppeteer.launch({
+    args: chromium.args,
+    executablePath: await chromium.executablePath(),
     headless: true,
-    // These flags are safe locally; also helps in some containerized environments.
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
 
   try {
