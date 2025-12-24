@@ -11,10 +11,10 @@ export const MinimalTemplate: React.FC<Props> = ({ data }) => {
 
   return (
     <div 
-      className="resume-root w-full bg-white text-gray-900 p-12" 
+      className="resume-root box-border w-full min-h-[297mm] bg-white text-gray-900 p-12" 
       style={{ fontFamily: data.fontFamily || 'Inter', fontSize: '10pt' }}
     >
-      <header className="flex justify-between items-start mb-12">
+      <header className="flex justify-between items-start mb-8">
         <div className="space-y-2">
           <h1 className="text-4xl font-bold tracking-tight">{data.fullName}</h1>
           <div className="flex flex-wrap gap-4 text-gray-500 text-sm">
@@ -30,7 +30,7 @@ export const MinimalTemplate: React.FC<Props> = ({ data }) => {
         )}
       </header>
 
-      <div className="space-y-10">
+      <div className="space-y-8">
         {data.summary && (
           <section>
             <p className="text-lg text-gray-600 leading-relaxed">{data.summary}</p>

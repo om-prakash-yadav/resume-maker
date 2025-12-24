@@ -97,16 +97,26 @@ export default function PrintPage() {
     markReady();
   }, [rendered]);
 
-  const printableWidth = `${210 - (marginMm * 2)}mm`;
+  const effectiveMarginMm = templateId === 'dark' || templateId === 'creative' ? 0 : marginMm;
+  const printableWidth = `${210 - (effectiveMarginMm * 2)}mm`;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="bg-white">
       {/* Apply per-page margins and break rules in the print layout (used by Puppeteer/Chromium). */}
       <style>{`
         @media print {
-          @page { size: A4; margin: ${marginMm}mm; }
+          @page { size: A4; margin: ${effectiveMarginMm}mm; }
+
+          /* Match the template height to the printable page height.
+             If we force 297mm while margins are non-zero, Chromium will overflow
+             and create an extra (often blank) page. */
+          #resume-print-root .resume-root {
+            box-sizing: border-box;
+            min-height: calc(297mm - ${effectiveMarginMm * 2}mm);
+          }
+
           .resume-section, section { break-inside: auto; page-break-inside: auto; }
-          .resume-item { break-inside: avoid; page-break-inside: avoid; }
+          .resume-item { break-inside: auto; page-break-inside: auto; }
           h1, h2, h3, h4, h5, h6 { break-after: avoid; page-break-after: avoid; }
 
           /* If margin is set to 0, remove template-root padding so there is no
@@ -117,7 +127,7 @@ export default function PrintPage() {
       <div
         id="resume-print-root"
         className="bg-white"
-        data-page-margin={String(marginMm)}
+        data-page-margin={String(effectiveMarginMm)}
         style={{ width: printableWidth }}
       >
         {rendered ?? (

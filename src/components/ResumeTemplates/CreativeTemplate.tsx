@@ -12,11 +12,11 @@ export const CreativeTemplate: React.FC<Props> = ({ data }) => {
 
   return (
     <div 
-      className="resume-root w-full bg-white text-black flex" 
+      className="resume-root box-border w-full min-h-[297mm] bg-white text-black flex" 
       style={{ fontFamily: data.fontFamily || 'Inter', fontSize: '10pt' }}
     >
       {/* Sidebar */}
-      <div className="w-1/3 bg-gray-900 text-white p-8 flex flex-col gap-8">
+      <div className="w-1/3 bg-gray-900 text-white p-10 flex flex-col gap-8">
         {data.photo && (
           <div className="w-32 h-32 mx-auto rounded-full border-4 overflow-hidden" style={{ borderColor: accentColor }}>
             <img src={data.photo} alt={data.fullName} className="w-full h-full object-cover" />

@@ -32,7 +32,8 @@ export function PdfResumePreview({ resumeData, templateId, marginMm, className }
     () => ({
       resumeData,
       templateId,
-      marginMm: clampMarginMm(marginMm),
+      // Full-bleed templates should not have page margins; margins create white borders.
+      marginMm: templateId === 'dark' || templateId === 'creative' ? 0 : clampMarginMm(marginMm),
       fileName: resumeData.fullName,
     }),
     [resumeData, templateId, marginMm]

@@ -195,13 +195,13 @@ export const ResumeForm: React.FC<Props> = ({ data, onChange }) => {
 
 
   return (
-    <div className="space-y-8 p-4 md:p-8 bg-white">
+    <div className="space-y-6 p-4 md:p-6 bg-white">
       
       {/* Font Selection */}
       <section className="space-y-4">
         <div className="flex items-center gap-2 text-gray-800">
-          <Palette size={20} className="text-blue-600" />
-          <h2 className="text-xl font-semibold">Design & Customization</h2>
+          <Palette size={18} className="text-blue-600" />
+          <h2 className="text-lg font-semibold">Design & Customization</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -209,7 +209,7 @@ export const ResumeForm: React.FC<Props> = ({ data, onChange }) => {
             <select
               value={data.fontFamily || 'Inter'}
               onChange={(e) => handleInputChange('fontFamily', e.target.value)}
-              className="w-full p-2.5 border border-gray-200 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+              className="w-full p-2 text-sm border border-gray-200 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
             >
               {GOOGLE_FONTS.map(font => (
                 <option key={font} value={font} className="text-gray-900 bg-white">{font}</option>
@@ -223,7 +223,7 @@ export const ResumeForm: React.FC<Props> = ({ data, onChange }) => {
                 type="color"
                 value={data.accentColor || '#3b82f6'}
                 onChange={(e) => handleInputChange('accentColor', e.target.value)}
-                className="h-10 w-20 p-1 border border-gray-200 rounded-lg cursor-pointer"
+                className="h-9 w-16 p-1 border border-gray-200 rounded-lg cursor-pointer"
               />
               <input
                 type="text"
@@ -239,7 +239,7 @@ export const ResumeForm: React.FC<Props> = ({ data, onChange }) => {
             <select
               value={data.skillStyle || 'categorized'}
               onChange={(e) => handleInputChange('skillStyle', e.target.value)}
-              className="w-full p-2.5 border border-gray-200 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+              className="w-full p-2 text-sm border border-gray-200 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
             >
               <option value="categorized">Categorized (Standard)</option>
               <option value="pills">Modern Pills</option>
@@ -252,14 +252,14 @@ export const ResumeForm: React.FC<Props> = ({ data, onChange }) => {
 
       <section className="space-y-4">
         <div className="flex items-center gap-2 text-gray-800">
-          <User size={20} className="text-blue-600" />
-          <h2 className="text-xl font-semibold">Personal Information</h2>
+          <User size={18} className="text-blue-600" />
+          <h2 className="text-lg font-semibold">Personal Information</h2>
         </div>
         
         <div className="flex flex-col md:flex-row gap-6 items-start">
           <div className="flex flex-col items-center gap-3">
             <div 
-              className="w-32 h-32 rounded-2xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center bg-gray-50 overflow-hidden relative group cursor-pointer hover:border-blue-400 transition-colors"
+              className="w-28 h-28 rounded-2xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center bg-gray-50 overflow-hidden relative group cursor-pointer hover:border-blue-400 transition-colors"
               onClick={() => fileInputRef.current?.click()}
             >
               {data.photo ? (
@@ -271,7 +271,7 @@ export const ResumeForm: React.FC<Props> = ({ data, onChange }) => {
                 </>
               ) : (
                 <>
-                  <Camera className="text-gray-400" size={32} />
+                  <Camera className="text-gray-400" size={28} />
                   <span className="text-[10px] text-gray-500 font-medium mt-1">Add Photo</span>
                 </>
               )}
@@ -299,7 +299,7 @@ export const ResumeForm: React.FC<Props> = ({ data, onChange }) => {
               <input
                 type="text"
                 placeholder="Full Name"
-                className="w-full p-2.5 pl-10 border border-gray-200 rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
                 value={data.fullName || ''}
                 onChange={(e) => handleInputChange('fullName', e.target.value)}
               />
@@ -309,7 +309,7 @@ export const ResumeForm: React.FC<Props> = ({ data, onChange }) => {
               <input
                 type="email"
                 placeholder="Email Address"
-                className="w-full p-2.5 pl-10 border border-gray-200 rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
                 value={data.email || ''}
                 onChange={(e) => handleInputChange('email', e.target.value)}
               />
@@ -319,7 +319,7 @@ export const ResumeForm: React.FC<Props> = ({ data, onChange }) => {
               <input
                 type="text"
                 placeholder="Phone Number"
-                className="w-full p-2.5 pl-10 border border-gray-200 rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
                 value={data.phone || ''}
                 onChange={(e) => handleInputChange('phone', e.target.value)}
               />
@@ -329,7 +329,7 @@ export const ResumeForm: React.FC<Props> = ({ data, onChange }) => {
               <input
                 type="text"
                 placeholder="Location (City, State)"
-                className="w-full p-2.5 pl-10 border border-gray-200 rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
                 value={data.address || ''}
                 onChange={(e) => handleInputChange('address', e.target.value)}
               />
@@ -339,7 +339,7 @@ export const ResumeForm: React.FC<Props> = ({ data, onChange }) => {
               <input
                 type="text"
                 placeholder="linkedin.com/in/username"
-                className="w-full p-2.5 pl-10 border border-gray-200 rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
                 value={data.linkedin || ''}
                 onChange={(e) => handleInputChange('linkedin', e.target.value)}
               />
@@ -349,7 +349,7 @@ export const ResumeForm: React.FC<Props> = ({ data, onChange }) => {
               <input
                 type="text"
                 placeholder="github.com/username"
-                className="w-full p-2.5 pl-10 border border-gray-200 rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
                 value={data.github || ''}
                 onChange={(e) => handleInputChange('github', e.target.value)}
               />
@@ -360,7 +360,7 @@ export const ResumeForm: React.FC<Props> = ({ data, onChange }) => {
 
       <section className="space-y-4">
         <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold text-gray-800">Professional Summary</h2>
+          <h2 className="text-lg font-semibold text-gray-800">Professional Summary</h2>
           <button
             onClick={() => handleImprove('summary', data.summary, 'summary')}
             disabled={!data.summary || loading === 'summary'}
@@ -372,7 +372,7 @@ export const ResumeForm: React.FC<Props> = ({ data, onChange }) => {
         </div>
         <textarea
           placeholder="e.g. Experienced Software Engineer with 5+ years of expertise in building scalable web applications using React and Node.js..."
-          className="w-full p-3 border rounded-lg h-32 placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+          className="w-full p-3 text-sm border rounded-lg h-28 placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
           value={data.summary || ''}
           onChange={(e) => handleInputChange('summary', e.target.value)}
         />
@@ -380,7 +380,7 @@ export const ResumeForm: React.FC<Props> = ({ data, onChange }) => {
 
       <section className="space-y-4">
         <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold text-gray-800">Experience</h2>
+          <h2 className="text-lg font-semibold text-gray-800">Experience</h2>
           <button onClick={addExperience} className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700">
             <Plus size={16} /> Add Experience
           </button>
@@ -391,28 +391,28 @@ export const ResumeForm: React.FC<Props> = ({ data, onChange }) => {
               <input
                 type="text"
                 placeholder="e.g. Senior Software Engineer"
-                className="p-2.5 border rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="p-2 text-sm border rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
                 value={exp.role || ''}
                 onChange={(e) => updateExperience(exp.id, 'role', e.target.value)}
               />
               <input
                 type="text"
                 placeholder="e.g. Google"
-                className="p-2.5 border rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="p-2 text-sm border rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
                 value={exp.company || ''}
                 onChange={(e) => updateExperience(exp.id, 'company', e.target.value)}
               />
               <input
                 type="text"
                 placeholder="e.g. Jan 2020"
-                className="p-2.5 border rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="p-2 text-sm border rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
                 value={exp.startDate || ''}
                 onChange={(e) => updateExperience(exp.id, 'startDate', e.target.value)}
               />
               <input
                 type="text"
                 placeholder="e.g. Present"
-                className="p-2.5 border rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="p-2 text-sm border rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
                 value={exp.endDate || ''}
                 onChange={(e) => updateExperience(exp.id, 'endDate', e.target.value)}
               />
@@ -447,7 +447,7 @@ export const ResumeForm: React.FC<Props> = ({ data, onChange }) => {
 
       <section className="space-y-4">
         <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold text-gray-800">Education</h2>
+          <h2 className="text-lg font-semibold text-gray-800">Education</h2>
           <button onClick={addEducation} className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700">
             <Plus size={16} /> Add Education
           </button>
@@ -464,28 +464,28 @@ export const ResumeForm: React.FC<Props> = ({ data, onChange }) => {
               <input
                 type="text"
                 placeholder="e.g. Stanford University"
-                className="p-2.5 border rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="p-2 text-sm border rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
                 value={edu.school || ''}
                 onChange={(e) => updateEducation(edu.id, 'school', e.target.value)}
               />
               <input
                 type="text"
                 placeholder="e.g. Bachelor of Science in Computer Science"
-                className="p-2.5 border rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="p-2 text-sm border rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
                 value={edu.degree || ''}
                 onChange={(e) => updateEducation(edu.id, 'degree', e.target.value)}
               />
               <input
                 type="text"
                 placeholder="e.g. Sep 2016"
-                className="p-2.5 border rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="p-2 text-sm border rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
                 value={edu.startDate || ''}
                 onChange={(e) => updateEducation(edu.id, 'startDate', e.target.value)}
               />
               <input
                 type="text"
                 placeholder="e.g. Jun 2020"
-                className="p-2.5 border rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="p-2 text-sm border rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
                 value={edu.endDate || ''}
                 onChange={(e) => updateEducation(edu.id, 'endDate', e.target.value)}
               />
@@ -496,7 +496,7 @@ export const ResumeForm: React.FC<Props> = ({ data, onChange }) => {
 
       <section className="space-y-4">
         <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold text-gray-800">Skills</h2>
+          <h2 className="text-lg font-semibold text-gray-800">Skills</h2>
           <div className="flex gap-4">
             {data.jobDescription && (
               <button
@@ -557,7 +557,7 @@ export const ResumeForm: React.FC<Props> = ({ data, onChange }) => {
 
       <section className="space-y-4">
         <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold text-gray-800">Projects</h2>
+          <h2 className="text-lg font-semibold text-gray-800">Projects</h2>
           <button onClick={addProject} className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700">
             <Plus size={16} /> Add Project
           </button>
@@ -569,14 +569,14 @@ export const ResumeForm: React.FC<Props> = ({ data, onChange }) => {
                 <input
                   type="text"
                   placeholder="Project Name"
-                  className="p-2.5 border rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="p-2 text-sm border rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
                   value={proj.name || ''}
                   onChange={(e) => updateProject(proj.id, 'name', e.target.value)}
                 />
                 <input
                   type="text"
                   placeholder="Link (optional)"
-                  className="p-2.5 border rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="p-2 text-sm border rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
                   value={proj.link || ''}
                   onChange={(e) => updateProject(proj.id, 'link', e.target.value)}
                 />

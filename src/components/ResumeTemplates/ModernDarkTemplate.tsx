@@ -11,10 +11,10 @@ export const ModernDarkTemplate: React.FC<Props> = ({ data }) => {
 
   return (
     <div 
-      className="resume-root w-full bg-[#0f172a] text-slate-300 overflow-hidden flex flex-col" 
+      className="resume-root box-border w-full min-h-[297mm] bg-[#0f172a] text-slate-300 overflow-hidden flex flex-col" 
       style={{ fontFamily: data.fontFamily || 'Inter', fontSize: '10pt' }}
     >
-      <header className="p-12 bg-slate-900/50 border-b border-slate-800 flex items-center gap-8">
+      <header className="p-16 bg-slate-900/50 border-b border-slate-800 flex items-center gap-8">
         {data.photo && (
           <div className="w-28 h-28 rounded-full border-4 border-slate-800 overflow-hidden shrink-0">
             <img src={data.photo} alt={data.fullName} className="w-full h-full object-cover" />

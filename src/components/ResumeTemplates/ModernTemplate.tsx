@@ -12,9 +12,9 @@ export const ModernTemplate: React.FC<Props> = ({ data }) => {
 
   return (
     <div 
-      className="resume-root w-full p-10 bg-white text-black" 
+      className="resume-root box-border w-full min-h-[297mm] p-12 bg-white text-black shadow-sm" 
       id="resume-preview"
-      style={{ fontFamily: data.fontFamily || 'serif', fontSize: '11pt', lineHeight: '1.4' }}
+      style={{ fontFamily: data.fontFamily || 'serif', fontSize: '11pt', lineHeight: '1.5' }}
     >
       <header className="text-center mb-6">
         {data.photo && (

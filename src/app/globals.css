@@ -106,9 +106,9 @@ body {
     page-break-after: avoid;
   }
 
-  /* Keep experience/education/project items together */
+  /* Avoid large blank areas: allow long items to split across pages. */
   .resume-item {
-    break-inside: avoid;
-    page-break-inside: avoid;
+    break-inside: auto;
+    page-break-inside: auto;
   }
 }

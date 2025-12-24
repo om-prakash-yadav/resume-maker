@@ -12,7 +12,7 @@ export const ElegantTemplate: React.FC<Props> = ({ data }) => {
 
   return (
     <div 
-      className="resume-root w-full bg-[#fcfcfc] text-gray-800 p-12" 
+      className="resume-root box-border w-full min-h-[297mm] bg-[#fcfcfc] text-gray-800 p-16" 
       style={{ fontFamily: data.fontFamily || 'Georgia, serif', fontSize: '10.5pt' }}
     >
       <header className="text-center mb-12 space-y-4">
