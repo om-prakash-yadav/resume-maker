@@ -9,11 +9,13 @@ import { MinimalTemplate } from '@/components/ResumeTemplates/MinimalTemplate';
 import { ModernDarkTemplate } from '@/components/ResumeTemplates/ModernDarkTemplate';
 import { PdfResumePreview } from '@/components/PdfResumePreview';
 import { ResumeData } from '@/types/resume';
-import { Download, FileText, RotateCcw, LayoutTemplate, Plus, ArrowRight, Sparkles, User, Briefcase as BriefcaseIcon, ChevronLeft, Upload, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { Download, FileText, RotateCcw, LayoutTemplate, Plus, ArrowRight, Sparkles, User, Briefcase as BriefcaseIcon, ChevronLeft, Upload, CheckCircle2, ArrowLeft, Lightbulb, Loader2 } from 'lucide-react';
  
 import { motion, AnimatePresence } from 'framer-motion';
 import { PROFESSIONAL_TEMPLATES, PROFESSIONAL_TEMPLATE_META } from '@/lib/templates';
 import { generateTailoredResume } from '@/lib/groq';
+import { generateAtsSuggestions, type AtsSuggestion } from '@/lib/groq';
+import { analyzeAtsKeywords, resumeDataToText, scoreAtsMatch, scoreAtsMatchFromText } from '@/lib/ats';
 
 const initialData: ResumeData = {
   fullName: '',
@@ -43,6 +45,166 @@ export default function Home() {
   const [templateId, setTemplateId] = useState<'modern' | 'creative' | 'elegant' | 'minimal' | 'dark'>('modern');
   const [marginMm, setMarginMm] = useState<number>(10);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+
+  const [showAtsSuggestions, setShowAtsSuggestions] = useState(false);
+  const [atsSuggestions, setAtsSuggestions] = useState<AtsSuggestion[]>([]);
+  const [atsSuggestionsLoading, setAtsSuggestionsLoading] = useState(false);
+  const [atsSuggestionsError, setAtsSuggestionsError] = useState<string | null>(null);
+  const [selectedAtsSuggestionIds, setSelectedAtsSuggestionIds] = useState<Set<string>>(new Set());
+  const [atsApplying, setAtsApplying] = useState(false);
+
+  const MAX_SUMMARY_CHARS = 450;
+  const MAX_SKILLS = 40;
+  const MAX_SKILL_NAME_CHARS = 40;
+  const MAX_BULLET_CHARS = 180;
+  const MAX_BULLETS_PER_EXPERIENCE = 6;
+  const MAX_EXPERIENCE_DESC_CHARS = 900;
+
+  const ats = React.useMemo(() => scoreAtsMatch(resumeData), [resumeData]);
+  const atsDraft = React.useMemo(() => scoreAtsMatchFromText(userInfo, jobInfo), [userInfo, jobInfo]);
+  const atsKeywordAnalysis = React.useMemo(
+    () => analyzeAtsKeywords(resumeDataToText(resumeData), resumeData.jobDescription || ''),
+    [resumeData]
+  );
+
+  const applyAtsActionToResume = (prev: ResumeData, action: any): ResumeData => {
+    if (!action || typeof action !== 'object' || typeof action.type !== 'string') return prev;
+
+    switch (action.type) {
+      case 'set_summary': {
+        const value = String(action.value ?? '')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, MAX_SUMMARY_CHARS);
+        if (!value) return prev;
+        return { ...prev, summary: value };
+      }
+      case 'add_skill': {
+        if ((prev.skills || []).length >= MAX_SKILLS) return prev;
+        const name = String(action.name ?? '')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, MAX_SKILL_NAME_CHARS);
+        if (!name) return prev;
+        const exists = (prev.skills || []).some(s => s.name.trim().toLowerCase() === name.toLowerCase());
+        if (exists) return prev;
+        const category = action.category ? String(action.category).trim() : undefined;
+        const level = (action.level as any) || 'Intermediate';
+        return {
+          ...prev,
+          skills: [
+            ...(prev.skills || []),
+            {
+              id: Math.random().toString(36).slice(2, 11),
+              name,
+              category,
+              level,
+            },
+          ],
+        };
+      }
+      case 'set_skill_category': {
+        const name = String(action.name ?? '').trim().toLowerCase();
+        const category = String(action.category ?? '').trim();
+        if (!name || !category) return prev;
+        return {
+          ...prev,
+          skills: (prev.skills || []).map(s =>
+            s.name.trim().toLowerCase() === name ? { ...s, category } : s
+          ),
+        };
+      }
+      case 'append_experience_bullet': {
+        const experienceId = String(action.experienceId ?? '').trim();
+        const bullet = String(action.bullet ?? '')
+          .replace(/^•\s*/g, '')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, MAX_BULLET_CHARS);
+        if (!experienceId || !bullet) return prev;
+        return {
+          ...prev,
+          experience: (prev.experience || []).map(e => {
+            if (e.id !== experienceId) return e;
+            const current = (e.description || '').trim();
+
+            const lines = current ? current.split(/\r?\n/).map(l => l.trim()).filter(Boolean) : [];
+            const bulletLines = lines.filter(l => l.startsWith('•'));
+            if (bulletLines.length >= MAX_BULLETS_PER_EXPERIENCE) return e;
+
+            const normalizedExisting = current.toLowerCase();
+            const normalizedNew = bullet.toLowerCase();
+            if (normalizedExisting.includes(normalizedNew)) return e;
+
+            const candidate = current ? `${current}\n• ${bullet}` : `• ${bullet}`;
+            if (candidate.length > MAX_EXPERIENCE_DESC_CHARS) return e;
+
+            const next = candidate;
+            return { ...e, description: next };
+          }),
+        };
+      }
+      default:
+        return prev;
+    }
+  };
+
+  const applySelectedAtsSuggestions = () => {
+    const selected = new Set(selectedAtsSuggestionIds);
+    if (!selected.size) return;
+
+    const toApply = atsSuggestions.filter(s => selected.has(s.id));
+    if (!toApply.length) return;
+
+    // Show loader immediately, then apply on next tick so UI updates first.
+    setAtsApplying(true);
+    setAtsSuggestionsError(null);
+
+    setTimeout(() => {
+      setResumeData(prev => {
+        let next = prev;
+        for (const s of toApply) {
+          next = applyAtsActionToResume(next, (s as any).action);
+        }
+        return next;
+      });
+
+      setSelectedAtsSuggestionIds(new Set());
+      setAtsSuggestions([]);
+      setAtsApplying(false);
+      setShowAtsSuggestions(false);
+    }, 150);
+  };
+
+  const fetchAtsSuggestions = async () => {
+    if (!resumeData.jobDescription?.trim()) {
+      setAtsSuggestionsError('Paste a job description to get suggestions.');
+      setAtsSuggestions([]);
+      return;
+    }
+
+    setAtsSuggestionsLoading(true);
+    setAtsSuggestionsError(null);
+    try {
+      const resumeText = resumeDataToText(resumeData);
+      const analysis = analyzeAtsKeywords(resumeText, resumeData.jobDescription);
+      const suggestions = await generateAtsSuggestions({
+        resumeData,
+        atsScore: ats.score,
+        matchedKeywords: analysis.matched,
+        missingKeywords: analysis.missing,
+      });
+      setAtsSuggestions(suggestions);
+      setSelectedAtsSuggestionIds(new Set());
+      if (!suggestions.length) setAtsSuggestionsError('No suggestions generated. Try adding more job description details.');
+    } catch (e: any) {
+      setAtsSuggestionsError(e?.message || 'Failed to generate suggestions.');
+      setAtsSuggestions([]);
+      setSelectedAtsSuggestionIds(new Set());
+    } finally {
+      setAtsSuggestionsLoading(false);
+    }
+  };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -591,6 +753,15 @@ export default function Home() {
                       value={jobInfo}
                       onChange={(e) => setJobInfo(e.target.value)}
                     />
+
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-500 font-medium">
+                        Live ATS match: <span className="text-gray-900 font-bold">{atsDraft.score}/100</span>
+                      </span>
+                      <span className="text-gray-400 font-medium">
+                        Keywords matched: {atsDraft.matchedKeywords}/{atsDraft.totalKeywords || 0}
+                      </span>
+                    </div>
                   </div>
 
                   <div className="flex items-center justify-between pt-4">
@@ -643,14 +814,119 @@ export default function Home() {
                     </p>
                   </div>
                 </div>
-                <button 
-                  onClick={() => setStep('landing')}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-50 text-gray-600 text-sm font-bold hover:bg-gray-100 transition-colors"
-                >
-                  <LayoutTemplate size={16} />
-                  Templates
-                </button>
+                <div className="flex items-center gap-3">
+                  <div className="px-3 py-2 rounded-xl bg-gray-50 border border-gray-100">
+                    <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">ATS Match</div>
+                    <div className="text-sm font-black text-gray-900 leading-tight">{ats.score}/100</div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const next = !showAtsSuggestions;
+                      setShowAtsSuggestions(next);
+                      if (next) {
+                        // Always refresh to reflect latest resume edits.
+                        setAtsSuggestions([]);
+                        setSelectedAtsSuggestionIds(new Set());
+                        setAtsSuggestionsError(null);
+                        if (!atsSuggestionsLoading && !atsApplying) {
+                          fetchAtsSuggestions();
+                        }
+                      }
+                    }}
+                    className="flex items-center justify-center w-10 h-10 rounded-xl bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors border border-gray-100"
+                    title="ATS suggestions"
+                  >
+                    <Lightbulb size={18} />
+                  </button>
+                  <button 
+                    onClick={() => setStep('landing')}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-50 text-gray-600 text-sm font-bold hover:bg-gray-100 transition-colors"
+                  >
+                    <LayoutTemplate size={16} />
+                    Templates
+                  </button>
+                </div>
               </div>
+
+              {showAtsSuggestions && (
+                <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/40 border border-gray-100 overflow-hidden">
+                  <div className="p-4 border-b border-gray-100 flex items-center justify-between gap-3">
+                    <div>
+                      <div className="text-sm font-black text-gray-900">ATS Suggestions</div>
+                      <div className="text-xs text-gray-500">
+                        Missing keywords: {atsKeywordAnalysis.missing.slice(0, 8).join(', ') || '—'}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={fetchAtsSuggestions}
+                        disabled={atsSuggestionsLoading || atsApplying}
+                        className="px-3 py-2 rounded-xl bg-gray-900 text-white text-xs font-bold hover:bg-blue-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                      >
+                        {atsSuggestionsLoading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                        {atsSuggestionsLoading ? 'Generating…' : 'Generate'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={applySelectedAtsSuggestions}
+                        disabled={!selectedAtsSuggestionIds.size || atsApplying}
+                        className="px-3 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                      >
+                        {atsApplying ? 'Applying…' : `Apply (${selectedAtsSuggestionIds.size})`}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="p-4 space-y-3">
+                    {atsApplying && (
+                      <div className="flex items-center justify-center gap-2 py-10 text-sm text-gray-600 font-medium">
+                        <Loader2 size={18} className="animate-spin" />
+                        Applying suggestions…
+                      </div>
+                    )}
+
+                    {atsSuggestionsError && (
+                      <div className="text-sm text-red-600 font-medium">{atsSuggestionsError}</div>
+                    )}
+
+                    {!atsApplying && !atsSuggestionsError && !atsSuggestions.length && !atsSuggestionsLoading && (
+                      <div className="text-sm text-gray-500">No suggestions yet. Click Generate.</div>
+                    )}
+
+                    {!atsApplying && atsSuggestions.map((s) => (
+                      <div key={s.id} className="border border-gray-100 rounded-xl p-3 bg-gray-50">
+                        <div className="flex items-start justify-between gap-3">
+                          <label className="flex items-start gap-3 min-w-0 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                              checked={selectedAtsSuggestionIds.has(s.id)}
+                              onChange={() =>
+                                setSelectedAtsSuggestionIds(prev => {
+                                  const next = new Set(prev);
+                                  if (next.has(s.id)) next.delete(s.id);
+                                  else next.add(s.id);
+                                  return next;
+                                })
+                              }
+                            />
+                            <span className="min-w-0">
+                              <span className="block text-sm font-bold text-gray-900 truncate">{s.title}</span>
+                              <span className="block text-xs text-gray-600 mt-1">{s.reason}</span>
+                              {s.expectedImpact && (
+                                <span className="block text-xs text-gray-500 mt-1">Expected: {s.expectedImpact}</span>
+                              )}
+                            </span>
+                          </label>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
                 <ResumeForm data={resumeData} onChange={setResumeData} />
               </div>

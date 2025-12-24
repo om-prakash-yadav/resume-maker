@@ -182,8 +182,8 @@ export const ModernTemplate: React.FC<Props> = ({ data }) => {
                   }, {} as Record<string, string[]>)
                 ).map(([category, skills]) => (
                   <div key={category} className="flex gap-4">
-                    <div className="w-24 shrink-0 text-xs font-bold text-gray-500 uppercase pt-0.5">{category}</div>
-                    <div className="text-sm text-gray-700">{skills.join(', ')}</div>
+                    <div className="w-24 shrink-0 text-xs font-bold text-gray-500 uppercase pt-0.5 break-words leading-tight">{category}</div>
+                    <div className="text-sm text-gray-700 min-w-0 break-words">{skills.join(', ')}</div>
                   </div>
                 ))}
               </div>

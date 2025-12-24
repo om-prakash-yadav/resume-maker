@@ -196,6 +196,20 @@ export const ResumeForm: React.FC<Props> = ({ data, onChange }) => {
 
   return (
     <div className="space-y-6 p-4 md:p-6 bg-white">
+
+      {/* Job Description (ATS) */}
+      <section className="space-y-2">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-lg font-semibold text-gray-800">Job Description (ATS)</h2>
+          <span className="text-xs font-medium text-gray-500">Used for keyword matching</span>
+        </div>
+        <textarea
+          placeholder="Paste the job description here to see a live ATS match score and extract skills..."
+          className="w-full p-3 text-sm border border-gray-200 rounded-lg placeholder:text-gray-400 text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none h-36"
+          value={data.jobDescription || ''}
+          onChange={(e) => handleInputChange('jobDescription', e.target.value)}
+        />
+      </section>
       
       {/* Font Selection */}
       <section className="space-y-4">

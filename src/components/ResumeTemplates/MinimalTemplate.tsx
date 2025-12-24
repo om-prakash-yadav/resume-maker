@@ -104,8 +104,8 @@ export const MinimalTemplate: React.FC<Props> = ({ data }) => {
                     }, {} as Record<string, string[]>)
                   ).map(([category, skills]) => (
                     <div key={category} className="flex gap-4">
-                      <span className="text-[8pt] font-bold text-gray-400 uppercase w-20 shrink-0">{category}</span>
-                      <span className="text-gray-600">{skills.join(', ')}</span>
+                      <span className="text-[8pt] font-bold text-gray-400 uppercase w-20 shrink-0 break-words leading-tight">{category}</span>
+                      <span className="text-gray-600 min-w-0 break-words">{skills.join(', ')}</span>
                     </div>
                   ))}
                 </div>
