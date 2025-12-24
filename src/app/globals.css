@@ -48,10 +48,58 @@ body {
   /* Allow sections to split across pages; keep *items* together instead. */
   .resume-section,
   section {
-    break-inside: auto;
     page-break-inside: auto;
   }
+}
 
+@layer utilities {
+  @keyframes ai-shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  .animate-ai-shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(66, 133, 244, 0.1) 0%,
+      rgba(155, 114, 203, 0.2) 25%,
+      rgba(217, 101, 112, 0.2) 50%,
+      rgba(155, 114, 203, 0.2) 75%,
+      rgba(66, 133, 244, 0.1) 100%
+    );
+    background-size: 200% 100%;
+    animation: ai-shimmer 3s infinite linear;
+  }
+
+  @keyframes ai-pulse {
+    0%, 100% {
+      opacity: 0.4;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.05);
+    }
+  }
+
+  .animate-ai-pulse {
+    animation: ai-pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .animation-delay-700 {
+    animation-delay: 700ms;
+  }
+
+  .animation-delay-1000 {
+    animation-delay: 1000ms;
+  }
+}
+
+@media print {
   /* Ensure headings stay with their content */
   h1, h2, h3, h4, h5, h6 {
     break-after: avoid;

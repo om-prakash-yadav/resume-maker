@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type { ResumeData } from '@/types/resume';
+import AiLoader from './AiLoader';
 
 type TemplateId = 'modern' | 'creative' | 'elegant' | 'minimal' | 'dark';
 
@@ -136,11 +137,12 @@ export function PdfResumePreview({ resumeData, templateId, marginMm, className }
   }, [pdfBytes]);
 
   return (
-    <div className={className}>
-      {(isLoading || error) && (
-        <div className="mb-3 text-sm">
-          {isLoading && <span className="text-gray-600">Generating preview…</span>}
-          {!isLoading && error && <span className="text-red-600">{error}</span>}
+    <div className={`relative ${className || ''}`}>
+      {isLoading && <AiLoader />}
+      
+      {error && (
+        <div className="mb-3 text-sm text-red-600">
+          {error}
         </div>
       )}
 
